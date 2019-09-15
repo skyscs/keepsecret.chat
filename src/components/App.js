@@ -8,6 +8,7 @@ import { Row, Col, Button, Badge } from 'reactstrap';
 import Octicon, { Clippy } from '@primer/octicons-react'
 import {CopyToClipboard} from 'react-copy-to-clipboard';
 import Invitation from "./Invitation";
+import Logo from "./Logo";
 
 class App extends Component {
     constructor(props) {
@@ -40,9 +41,9 @@ class App extends Component {
                 <Col sm="12" md={{ size: 8, offset: 2 }} className='d-flex h-100 flex-column'>
                     <Row>
                         <Col>
-                            <h1>KeepSecret.chat</h1>
+                            <Logo />
                         </Col>
-                        <Col>
+                        <Col className="mb-2">
                             { !connectedUserId && userName && (
                                 <CopyToClipboard text={ userId }>
                                     <Button color="primary" outline className='float-right mt-2'>
@@ -66,7 +67,12 @@ class App extends Component {
                         />
                     )}
                     {connectedUserId && !connectionEstablished && (
-                        <Invitation chatOwner={chatOwner} connectedUserName={connectedUserName} />
+                        <Invitation
+                            chatOwner={ chatOwner }
+                            connectedUserName={ connectedUserName }
+                            onAccept={ this.state.rtc.acceptConnection.bind(this.state.rtc) }
+                            onRejcet={ this.state.rtc.rejectConnection.bind(this.state.rtc) }
+                        />
                     )}
                     {connectedUserId && connectionEstablished && this.state.rtc && (
                         <Chat messages={messages} />

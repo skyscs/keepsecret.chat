@@ -97,6 +97,24 @@ wss.on('connection', connection => {
 
                 break;
 
+            case 'accept':
+                if (users[message.userId] !== undefined) {
+                    sendTo(users[message.userId], {
+                        type: 'accept'
+                    });
+                }
+
+                break;
+
+            case 'reject':
+                if (users[message.userId] !== undefined) {
+                    sendTo(users[message.userId], {
+                        type: 'reject'
+                    });
+                }
+
+                break;
+
             case 'leave':
                 console.log('Disconnecting from', message.userId);
 

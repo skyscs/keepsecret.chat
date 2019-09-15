@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import {Button, Card, CardBody, CardHeader, CardText} from "reactstrap";
 
-const Invitation = ({ chatOwner, connectedUserName }) => {
+const Invitation = ({ chatOwner, connectedUserName, onAccept, onReject }) => {
     return (
         <div>
             { !chatOwner && (
@@ -10,8 +10,8 @@ const Invitation = ({ chatOwner, connectedUserName }) => {
                     <CardHeader><strong>{ connectedUserName }</strong> wants to join</CardHeader>
                     <CardBody>
                         <CardText>You can accept or reject him</CardText>
-                        <Button color="success" className="mr-2">Accept</Button>
-                        <Button color="error" >Reject</Button>
+                        <Button color="success" className="mr-2" onClick={onAccept}>Accept</Button>
+                        <Button color="danger" onClick={onReject}>Reject</Button>
                     </CardBody>
                 </Card>
             ) }

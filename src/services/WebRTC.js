@@ -1,4 +1,12 @@
-import {addMessage, setUserId, setConnectedUserId, setConnectedUserName, setUserName, setChatOwner} from '../actions'
+import {
+    addMessage,
+    setUserId,
+    setConnectedUserId,
+    setConnectedUserName,
+    setUserName,
+    setChatOwner,
+    setConnectionStatus
+} from '../actions'
 
 /**
  * @class WebRTC
@@ -68,6 +76,14 @@ class WebRTC {
 
                 case 'candidate':
                     this.candidate(message.candidate)
+                    break
+
+                case 'accept':
+                    this.accept()
+                    break
+
+                case 'reject':
+                    this.reject()
                     break
 
                 case 'leave':
@@ -202,6 +218,31 @@ class WebRTC {
             .catch((err) => {
                 console.log(err)
             })
+    }
+
+    accept = () => {
+        this.dispatch(setConnectionStatus(true))
+    }
+
+    reject = () => {
+        this.dispatch(setConnectedUserId(''))
+        this.dispatch(setConnectionStatus(false))
+    }
+
+    acceptConnection = () => {
+        this.accept()
+        this.sendToWs({
+            type: 'accept',
+            userId: this.connectedUserId
+        })
+    }
+
+    rejectConnection = () => {
+        this.reject()
+        this.sendToWs({
+            type: 'reject',
+            userId: this.connectedUserId
+        })
     }
 
     /**
