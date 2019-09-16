@@ -105,6 +105,7 @@ class WebRTC {
         this.rtcConnection = new RTCPeerConnection()
 
         this.rtcConnection.onicecandidate = (event) => {
+            console.log('Sending candidate', event.candidate)
             if (event.candidate) {
                 this.sendToWs({
                     type: 'candidate',
@@ -114,14 +115,16 @@ class WebRTC {
         }
 
         this.dataChannel = this.rtcConnection.createDataChannel('c1')
+        console.log('Sending Channel current state', this.dataChannel);
+
         this.dataChannel.onopen = (event) => {
             console.log('Sending Channel is open', event);
         }
 
         this.rtcConnection.ondatachannel = (event) => {
-            console.log('Sending Channel current state', event);
-
             this.receiveChannel = event.channel
+            console.log('Receive Channel current state', event);
+
             this.receiveChannel.onmessage = (event) => {
                 this.dispatch(addMessage(event.data, false))
             }
@@ -191,9 +194,10 @@ class WebRTC {
     }
 
     /**
-     * @param {object} candidate
+     * @param candidate
      */
     candidate = candidate => {
+        console.log(candidate);
         this.rtcConnection.addIceCandidate(new RTCIceCandidate(candidate))
             .catch((err) => {
                 console.log(err)
