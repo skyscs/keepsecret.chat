@@ -38,7 +38,7 @@ class WebRTC {
      * Init WebSocket connection and listeners
      */
     init = () => {
-        this.ws = new WebSocket('ws://localhost:9090') // TODO: move to config
+        this.ws = new WebSocket('ws://ec2-35-167-72-75.us-west-2.compute.amazonaws.com:9090') // TODO: move to config
         this.ws.onopen = () => {
             this.sendToWs({
                 type: 'login'
