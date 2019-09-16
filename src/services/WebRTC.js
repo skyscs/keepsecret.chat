@@ -24,6 +24,7 @@ class WebRTC {
     dataChannel
     connectedUserId
     userName
+    messagesQueue = []
 
     /**
      * @param {function} dispatch
@@ -268,7 +269,33 @@ class WebRTC {
      * @param {string} message
      */
     sendMessageToChannel = message => {
-        this.dataChannel.send(message)
+        switch (this.dataChannel.readyState) {
+            case 'connecting':
+                console.log('Connection not open; queueing: ' + message);
+                this.messagesQueue.push(message);
+                break;
+
+            case 'open':
+                console.log('Connection is open: ' + message);
+                this.messagesQueue.push(message);
+                this.messagesQueue.forEach((message) => {
+                    this.dataChannel.send(message)
+                    this.dispatch(addMessage(message, true))
+                });
+                this.messagesQueue = []
+                break;
+
+            case 'closing':
+                console.log('Attempted to send message while closing: ' + message);
+                break;
+
+            case 'closed':
+                console.log('Error! Attempt to send while connection closed.');
+                break;
+
+            default:
+                console.log('DC RS', this.dataChannel.readyState)
+        }
     }
 
     /**
