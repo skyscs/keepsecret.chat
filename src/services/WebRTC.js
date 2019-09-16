@@ -25,7 +25,6 @@ class WebRTC {
     receiveChannel
     connectedUserId
     userName
-    messagesQueue = []
 
     /**
      * @param {function} dispatch
@@ -140,7 +139,6 @@ class WebRTC {
         this.rtcConnection = new RTCPeerConnection(configuration)
 
         this.rtcConnection.onicecandidate = (event) => {
-            console.log('Sending candidate', event.candidate)
             if (event.candidate) {
                 this.sendToWs({
                     type: 'candidate',
@@ -150,21 +148,11 @@ class WebRTC {
         }
 
         this.dataChannel = this.rtcConnection.createDataChannel('c1')
-        console.log('Sending Channel current state', this.dataChannel);
-
-        this.dataChannel.onopen = (event) => {
-            console.log('Sending Channel is open', event);
-        }
-
         this.rtcConnection.ondatachannel = (event) => {
             this.receiveChannel = event.channel
-            console.log('Receive Channel current state', event);
 
             this.receiveChannel.onmessage = (event) => {
                 this.dispatch(addMessage(event.data, false))
-            }
-            this.receiveChannel.onopen = (event) => {
-                console.log('Receive Channel is open', event)
             }
         }
 
@@ -238,7 +226,6 @@ class WebRTC {
      * @param candidate
      */
     candidate = candidate => {
-        console.log(candidate);
         this.rtcConnection.addIceCandidate(new RTCIceCandidate(candidate))
             .catch((err) => {
                 console.log(err)
@@ -322,32 +309,9 @@ class WebRTC {
      * @param {string} message
      */
     sendMessageToChannel = message => {
-        switch (this.dataChannel.readyState) {
-            case 'connecting':
-                console.log('Connection not open; queueing: ' + message);
-                this.messagesQueue.push(message);
-                break;
-
-            case 'open':
-                console.log('Connection is open: ' + message);
-                this.messagesQueue.push(message);
-                this.messagesQueue.forEach((message) => {
-                    this.dataChannel.send(message)
-                    this.dispatch(addMessage(message, true))
-                });
-                this.messagesQueue = []
-                break;
-
-            case 'closing':
-                console.log('Attempted to send message while closing: ' + message);
-                break;
-
-            case 'closed':
-                console.log('Error! Attempt to send while connection closed.');
-                break;
-
-            default:
-                console.log('DC RS', this.dataChannel.readyState)
+        if (this.dataChannel.readyState === 'open') {
+            this.dataChannel.send(message)
+            this.dispatch(addMessage(message, true))
         }
     }
 

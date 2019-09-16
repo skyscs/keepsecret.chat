@@ -1,8 +1,16 @@
 const shortid = require('shortid');
-const WebSocketServer = require('ws').Server;
 const curry = require('lodash.curry');
+const fs = require('fs');
+const https = require('https');
+const WebSocket = require('ws');
 
-const wss = new WebSocketServer({port: 9090});
+const server = https.createServer({
+    key: fs.readFileSync('./path/to/key'),
+    cert: fs.readFileSync('./path/to/cert')
+});
+const wss = new WebSocket.Server({ server });
+server.listen(5000);
+
 const users = {};
 
 sendTo = (connection, message) => {
