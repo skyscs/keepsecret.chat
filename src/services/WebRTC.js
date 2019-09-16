@@ -102,9 +102,7 @@ class WebRTC {
      * @param {string} userId
      */
     login = userId => {
-        this.rtcConnection = new RTCPeerConnection({
-            'iceServers': [{ 'url': 'stun:stun2.1.google.com:19302' }] // TODO: move to config
-        })
+        this.rtcConnection = new RTCPeerConnection()
 
         this.rtcConnection.onicecandidate = (event) => {
             if (event.candidate) {
@@ -121,6 +119,8 @@ class WebRTC {
         }
 
         this.rtcConnection.ondatachannel = (event) => {
+            console.log('Sending Channel current state', event);
+
             this.receiveChannel = event.channel
             this.receiveChannel.onmessage = (event) => {
                 this.dispatch(addMessage(event.data, false))
