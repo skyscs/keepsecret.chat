@@ -22,6 +22,7 @@ class WebRTC {
     ws
     rtcConnection
     dataChannel
+    receiveChannel
     connectedUserId
     userName
     messagesQueue = []
@@ -115,11 +116,17 @@ class WebRTC {
         }
 
         this.dataChannel = this.rtcConnection.createDataChannel('c1')
+        this.dataChannel.onopen = (event) => {
+            console.log('Sending Channel is open', event);
+        }
 
         this.rtcConnection.ondatachannel = (event) => {
-            const receiveChannel = event.channel
-            receiveChannel.onmessage = (event) => {
+            this.receiveChannel = event.channel
+            this.receiveChannel.onmessage = (event) => {
                 this.dispatch(addMessage(event.data, false))
+            }
+            this.receiveChannel.onopen = (event) => {
+                console.log('Receive Channel is open', event)
             }
         }
 
@@ -135,7 +142,7 @@ class WebRTC {
     }
 
     /**
-     * @param {object} offer
+     * @param offer
      * @param {string} userId
      * @param {string} connectedUserName
      */
@@ -166,7 +173,8 @@ class WebRTC {
     }
 
     /**
-     * @param {object} answer
+     * @param answer
+     * @param {string} userId
      * @param {string} userName
      */
     answer = (answer, userId, userName) => {
