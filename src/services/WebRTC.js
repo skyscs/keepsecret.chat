@@ -102,7 +102,42 @@ class WebRTC {
      * @param {string} userId
      */
     login = userId => {
-        this.rtcConnection = new RTCPeerConnection()
+        // TODO: Move to config
+        const configuration = { iceServers: [{
+                urls: [
+                    'stun:stun.l.google.com:19302',
+                    'stun:stun1.l.google.com:19302',
+                    'stun:stun2.l.google.com:19302',
+                    'stun:stun3.l.google.com:19302',
+                    'stun:stun4.l.google.com:19302',
+                ]
+            }, {
+                url: 'turn:numb.viagenie.ca',
+                credential: 'muazkh',
+                username: 'webrtc@live.com'
+            },
+            {
+                url: 'turn:192.158.29.39:3478?transport=udp',
+                credential: 'JZEOEt2V3Qb0y27GRntt2u2PAYA=',
+                username: '28224511:1379330808'
+            },
+            {
+                url: 'turn:192.158.29.39:3478?transport=tcp',
+                credential: 'JZEOEt2V3Qb0y27GRntt2u2PAYA=',
+                username: '28224511:1379330808'
+            },
+            {
+                url: 'turn:turn.bistri.com:80',
+                credential: 'homeo',
+                username: 'homeo'
+            },
+            {
+                url: 'turn:turn.anyfirewall.com:443?transport=tcp',
+                credential: 'webrtc',
+                username: 'webrtc'
+            }]
+        };
+        this.rtcConnection = new RTCPeerConnection(configuration)
 
         this.rtcConnection.onicecandidate = (event) => {
             console.log('Sending candidate', event.candidate)
@@ -151,25 +186,31 @@ class WebRTC {
      */
     offer = (offer, userId, connectedUserName) => {
         this.connectedUserId = userId
+        let createdAnswer
 
         this.rtcConnection.setRemoteDescription(new RTCSessionDescription(offer))
             .then(() => {
                 return this.rtcConnection.createAnswer()
-                    .then(answer => {
-                        return this.rtcConnection.setLocalDescription(answer)
-                            .then(() => {
-                                this.sendToWs({
-                                    type: 'answer',
-                                    answer: answer,
-                                    userName: this.userName // Send our name to connected user
-                                })
-
-                                // With offer we got name of user who wants to connect
-                                this.dispatch(setConnectedUserId(userId))
-                                this.dispatch(setConnectedUserName(connectedUserName))
-                            })
-                    })
             })
+            .then(answer => {
+                createdAnswer = answer
+                return this.rtcConnection.setLocalDescription(answer)
+            })
+            .then(() => {
+                console.log('A', createdAnswer)
+
+                this.sendToWs({
+                    type: 'answer',
+                    answer: createdAnswer,
+                    userName: this.userName // Send our name to connected user
+                })
+
+                // With offer we got name of user who wants to connect
+                this.dispatch(setConnectedUserId(userId))
+                this.dispatch(setConnectedUserName(connectedUserName))
+            })
+
+
             .catch((err) => {
                 console.log(err)
             })
