@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 import { Card, CardBody, CardText } from 'reactstrap'
 import { removeMessage } from "../actions"
 
-const secondsToRemove = 60;
+const secondsToRemove = parseInt(process.env.REACT_APP_SECONDS_TO_REMOVE_MESSAGE);
 
 class Message extends Component {
     constructor(props) {
@@ -12,6 +12,7 @@ class Message extends Component {
         this.state = {
             seconds: secondsToRemove
         }
+        console.log(secondsToRemove)
     }
 
     componentDidMount() {
@@ -35,7 +36,7 @@ class Message extends Component {
             seconds: createdDateInSeconds + secondsToRemove - currentDateInSeconds
         })
 
-        if (createdDateInSeconds + secondsToRemove < currentDateInSeconds) {
+        if (this.state.seconds <= 0) {
             dispatch(removeMessage(id))
             clearInterval(this.timerID)
         }

@@ -9,6 +9,7 @@ import Octicon, { Clippy } from '@primer/octicons-react'
 import {CopyToClipboard} from 'react-copy-to-clipboard';
 import Invitation from "./Invitation";
 import Logo from "./Logo";
+import '../index.css';
 
 class App extends Component {
     constructor(props) {

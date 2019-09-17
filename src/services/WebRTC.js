@@ -39,7 +39,7 @@ class WebRTC {
      * Init WebSocket connection and listeners
      */
     init = () => {
-        this.ws = new WebSocket('wss://ws.wekeepsecret.com:5000') // TODO: move to config
+        this.ws = new WebSocket(process.env.REACT_APP_WS_SERVER_ADDR)
         this.ws.onopen = () => {
             this.sendToWs({
                 type: 'login'
@@ -104,12 +104,12 @@ class WebRTC {
         // TODO: Move to config
         const configuration = { iceServers: [{
                 urls: [
-                    'stun:stun3.l.google.com:19302',
+                    process.env.REACT_APP_STUN_SERVER_ADDR,
                 ]
             }, {
-                urls: ['turn:numb.viagenie.ca'],
-                credential: 'muazkh',
-                username: 'webrtc@live.com'
+                urls: [process.env.REACT_APP_TURN_SERVER_ADDR],
+                credential: process.env.REACT_APP_TURN_SERVER_CREDENTIAL,
+                username: process.env.REACT_APP_TURN_SERVER_USERNAME
             }]
         };
         this.rtcConnection = new RTCPeerConnection(configuration)
