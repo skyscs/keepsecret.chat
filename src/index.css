@@ -1,3 +1,7 @@
+.toast .progress {
+    height: 0.25rem;
+}
+
 .message-enter {
     opacity: 0;
 }

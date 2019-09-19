@@ -4,7 +4,7 @@ import Chat from './Chat'
 import AddMessage from './AddMessage'
 import WebRTC from '../services/WebRTC'
 import InitConnection from "./InitConnection"
-import { Row, Col, Button, Badge } from 'reactstrap';
+import {Row, Col, Button, Badge, Nav, NavItem, Navbar, NavbarBrand} from 'reactstrap';
 import Octicon, { Clippy } from '@primer/octicons-react'
 import {CopyToClipboard} from 'react-copy-to-clipboard';
 import Invitation from "./Invitation";
@@ -39,32 +39,40 @@ class App extends Component {
 
         return (
             <Row className='h-100'>
-                <Col sm="12" md={{ size: 8, offset: 2 }} className='d-flex h-100 flex-column'>
-                    <Row>
-                        <Col>
+                <Col md="12" lg={{ size: 8, offset: 2 }} className='d-flex h-100 flex-column'>
+                    <Navbar color="light" light expand="md mb-3 mt-3">
+                        <NavbarBrand href="/">
                             <Logo />
-                        </Col>
-                        <Col className="mb-2">
+                        </NavbarBrand>
+                        <Nav className="ml-auto" navbar>
                             { !connectedUserId && userName && (
-                                <CopyToClipboard text={ userId }>
-                                    <Button color="primary" outline className='float-right mt-2'>
-                                        Hello <strong>{ userName }</strong>, your ChatID is
-                                        <Badge color="secondary" className="ml-2">{ userId }</Badge>
-                                        <Octicon icon={ Clippy } className='mb-1 ml-2' />
-                                    </Button>
-                                </CopyToClipboard>
+                                <NavItem>
+                                    <CopyToClipboard text={ userId }>
+                                        <Button color="primary" outline className='float-right mt-2'>
+                                            Hello <strong>{ userName }</strong>, your ChatID is
+                                            <Badge color="secondary" className="ml-2">{ userId }</Badge>
+                                            <Octicon icon={ Clippy } className='mb-1 ml-2' />
+                                        </Button>
+                                    </CopyToClipboard>
+                                </NavItem>
                             ) }
                             { connectedUserId && (
-                                <Button color="success" outline className='float-right mt-2'>
-                                    User <strong>{ connectedUserName }</strong> is connected
-                                </Button>
+                                <NavItem>
+                                    <Button color="danger"  onClick={ this.state.rtc.rejectConnection.bind(this.state.rtc) }>
+                                        Click to disconnect user <strong>{ connectedUserName }</strong> and clear all history
+                                    </Button>
+                                </NavItem>
                             )}
-                        </Col>
-                    </Row>
+                        </Nav>
+                    </Navbar>
+
                     {!connectedUserId && this.state.rtc && (
                         <InitConnection
                             connect={ this.state.rtc.connect.bind(this.state.rtc) }
                             saveUserName={ this.state.rtc.saveUserName.bind(this.state.rtc) }
+                            userName={ userName }
+                            connectedUserId={ connectedUserId }
+                            connectionEstablished={ connectionEstablished }
                         />
                     )}
                     {connectedUserId && !connectionEstablished && (
@@ -72,7 +80,7 @@ class App extends Component {
                             chatOwner={ chatOwner }
                             connectedUserName={ connectedUserName }
                             onAccept={ this.state.rtc.acceptConnection.bind(this.state.rtc) }
-                            onRejcet={ this.state.rtc.rejectConnection.bind(this.state.rtc) }
+                            onReject={ this.state.rtc.rejectConnection.bind(this.state.rtc) }
                         />
                     )}
                     {connectedUserId && connectionEstablished && this.state.rtc && (

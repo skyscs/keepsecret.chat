@@ -4,10 +4,16 @@ import {Button, Input, Form, InputGroup, InputGroupAddon} from 'reactstrap';
 class InitConnection extends Component {
     constructor(props) {
         super(props)
+
+        const {
+            userName,
+            connectedUserId
+        } = this.props
+
         this.state = {
-            userName: '',
-            connectedUserId: '',
-            readyToConnect: false
+            userName: userName,
+            connectedUserId: connectedUserId,
+            readyToConnect: !!userName
         }
 
         this.handleChange = this.handleChange.bind(this);

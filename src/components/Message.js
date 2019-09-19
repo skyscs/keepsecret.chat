@@ -1,7 +1,7 @@
 import { connect } from "react-redux"
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import { Card, CardBody, CardText } from 'reactstrap'
+import {Progress, Toast, ToastBody, ToastHeader} from 'reactstrap'
 import { removeMessage } from "../actions"
 
 const secondsToRemove = parseInt(process.env.REACT_APP_SECONDS_TO_REMOVE_MESSAGE);
@@ -46,14 +46,10 @@ class Message extends Component {
         const { text, own } = this.props
         return (
             <div className='clearfix mb-2 mt-2 mr-2 ml-2'>
-                <Card className={own ? 'float-right' : 'float-left'}>
-                    <CardBody>
-                        <CardText>{ text }</CardText>
-                        <CardText>
-                            <small className="text-muted">Will be removed in { this.state.seconds } sec</small>
-                        </CardText>
-                    </CardBody>
-                </Card>
+                <Toast className={own ? 'float-right' : 'float-left'}>
+                    <ToastBody>{ text }</ToastBody>
+                    <Progress value={ this.state.seconds } max={ secondsToRemove } />
+                </Toast>
             </div>
         )
     }

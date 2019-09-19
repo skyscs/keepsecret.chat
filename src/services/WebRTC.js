@@ -238,8 +238,10 @@ class WebRTC {
     }
 
     reject = () => {
+        this.connectedUserId = null;
         this.dispatch(setConnectedUserId(''))
         this.dispatch(setConnectionStatus(false))
+        this.dispatch(setChatOwner(false))
     }
 
     acceptConnection = () => {
@@ -251,11 +253,11 @@ class WebRTC {
     }
 
     rejectConnection = () => {
-        this.reject()
         this.sendToWs({
             type: 'reject',
             userId: this.connectedUserId
         })
+        this.reject()
     }
 
     /**
